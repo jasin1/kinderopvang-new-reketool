@@ -627,7 +627,7 @@ $(".reken_btn").mousedown("click", function () {
     // gekozen tarief
     $(".overzicht_tarief").html('&euro; ' +tarief);
     //hieronder wordt met mail mee verzonden
-    $("#send-tarief").val('Ã¢â€šÂ¬'+tarief);
+    $("#send-tarief").val('&euro;'+tarief);
     $(".tarieven").hide();
     $(".dagen").hide();
 
@@ -684,7 +684,7 @@ $(".reken_btn").mousedown("click", function () {
         $(".overzicht_kosten_totaal").html( '&euro; ' +rounded);
         $(".overzicht_txt").fadeIn("slow");
 
-        $("#send-totaal").val('Ã¢â€šÂ¬ ' + rounded);
+        $("#send-totaal").val('&euro; ' + rounded);
         //console.log($("#send-totaal").val());
         var alldays = selected_weekdagen.join();
         $("#send-dagen").val(alldays);
