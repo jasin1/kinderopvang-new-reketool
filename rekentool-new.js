@@ -713,4 +713,7 @@ $(".back_btn").mousedown("click", function () {
 
 // check commit
 
+// old src: https://jasin1.github.io/kinderopvang-reketool/rekentool-2022.js
+
+// new jsdelivr url: https://cdn.jsdelivr.net/gh/jasin1/kinderopvang-new-reketool/rekentool-new.js
 
