@@ -657,12 +657,10 @@ $(".reken_btn").mousedown("click", function () {
 
         $("#send-dagen").val("maandag,dinsdag,woensdag,donderdag,vrijdag");
 
-        $(".extra_txt").html("U krijgt een halve dag gratis van ons bij dit gekozen opvang pakket.
-Normaliter 260 uur maar u ontvangt 30 uur korting dat betekend wat u moet doorgeven aan de belastingdienst is;
-230 X &euro;9,75 = &euro;2.242,50 per maand voor 5 hele dagen!");
-        $("#korting-txt").val("U krijgt een halve dag gratis van ons bij dit gekozen opvang pakket.
-Normaliter 260 uur maar u ontvangt 30 uur korting dat betekend wat u moet doorgeven aan de belastingdienst is;
-230 X &euro;9,75 = &euro;2.242,50 per maand voor 5 hele dagen!");
+        $(".extra_txt").html("U krijgt een halve dag gratis van ons bij dit gekozen opvang pakket.<br>
+Normaliter 260 uur maar u ontvangt 30 uur korting dat betekend wat u moet doorgeven aan de belastingdienst is; <br>230 X &euro;9,75 = &euro;2.242,50 per maand voor 5 hele dagen!");
+        $("#korting-txt").val("U krijgt een halve dag gratis van ons bij dit gekozen opvang pakket.<br>
+Normaliter 260 uur maar u ontvangt 30 uur korting dat betekend wat u moet doorgeven aan de belastingdienst is; <br>230 X &euro;9,75 = &euro;2.242,50 per maand voor 5 hele dagen!");
 
     } else{
         $(".extra_txt").html(" ");
