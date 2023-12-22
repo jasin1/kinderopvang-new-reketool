@@ -649,8 +649,8 @@ $(".reken_btn").mousedown("click", function () {
 
         $("#send-opvang").val("KDV hele dagopvang (12 uur p/d)");
 
-        $(".overzicht_kosten_totaal").html("Ã¢â€šÂ¬ 1875");
-        $("#send-totaal").val("Ã¢â€šÂ¬ 1875");
+        $(".overzicht_kosten_totaal").html("â‚¬ 2242.50");
+        $("#send-totaal").val("â‚¬ 2242.50");
 
         $(".overzicht_uren_totaal").html("260");
         $("#send-uren").val("260");
