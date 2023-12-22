@@ -649,8 +649,8 @@ $(".reken_btn").mousedown("click", function () {
 
         $("#send-opvang").val("KDV hele dagopvang (12 uur p/d)");
 
-        $(".overzicht_kosten_totaal").html("Ã¢â€šÂ¬ 1875");
-        $("#send-totaal").val("Ã¢â€šÂ¬ 1875");
+        $(".overzicht_kosten_totaal").html("â‚¬ 2242.50");
+        $("#send-totaal").val("â‚¬ 2242.50");
 
         $(".overzicht_uren_totaal").html("260");
         $("#send-uren").val("260");
@@ -716,4 +716,6 @@ $(".back_btn").mousedown("click", function () {
 // old src: https://jasin1.github.io/kinderopvang-reketool/rekentool-2022.js
 
 // new jsdelivr url: https://cdn.jsdelivr.net/gh/jasin1/kinderopvang-new-reketool/rekentool-new.js
+
+// branch name aanpassing-test
 
