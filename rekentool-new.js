@@ -60,7 +60,7 @@ let voorschoolse_opvang = {
     naam: "voorschoolse",
     tarief_1:
         {
-            tarief: '9.10',
+            tarief: '9.50',
             descrp: "VSO zonder vakantie opvang",
             maandag_uren: "6.67",
             dinsdag_uren: "6.67",
@@ -72,7 +72,7 @@ let voorschoolse_opvang = {
 
     tarief_2:
         {
-            tarief: '8.75',
+            tarief: '9.25',
             descrp: "VSO geheel opvang met vakantieopvang",
             maandag_uren: "18.67",
             dinsdag_uren: "18.67",
@@ -155,7 +155,7 @@ let naschoolse_opvang = {
     naam: "naschoolse",
     tarief_1:
         {
-            tarief: '9.10',
+            tarief: '9.50',
             descrp: "NSO zonder vakantie opvang",
             maandag_uren: "16.67",
             dinsdag_uren: "16.67",
@@ -167,7 +167,7 @@ let naschoolse_opvang = {
 
     tarief_2:
         {
-            tarief: '8.75',
+            tarief: '9.25',
             descrp: "NSO geheel opvang met vakantieopvang",
             maandag_uren: "28.67",
             dinsdag_uren: "28.67",
@@ -250,7 +250,7 @@ let buitenschoolse_opvang = {
     naam: "buitenschoolse",
     tarief_1:
         {
-            tarief: '8.75',
+            tarief: '9.25',
             descrp: "BSO met vakantieopvang",
             maandag_uren: "35.33",
             dinsdag_uren: "35.33",
@@ -262,7 +262,7 @@ let buitenschoolse_opvang = {
 
     tarief_2:
         {
-            tarief: '9.10',
+            tarief: '9.50',
             descrp: "BSO zonder vakantieopvang",
             maandag_uren: "23.33",
             dinsdag_uren: "23.33",
@@ -273,7 +273,7 @@ let buitenschoolse_opvang = {
 
     tarief_3:
         {
-            tarief: '10.50',
+            tarief: '13.00',
             descrp: "Alleen vakantieopvang",
             maandag_uren: "12",
             dinsdag_uren: "12",
@@ -376,7 +376,7 @@ let dag_opvang = {
     naam: "dag",
     tarief_1:
         {
-            tarief: '10.25',
+            tarief: '10.70',
             descrp: "KDV halve dagopvang (6 uur p/d)",
             maandag_uren: "26",
             dinsdag_uren: "26",
@@ -388,7 +388,7 @@ let dag_opvang = {
 
     tarief_2:
         {
-            tarief: '9.75',
+            tarief: '10.45',
             descrp: "KDV hele dagopvang (12 uur p/d)",
             maandag_uren: "52",
             dinsdag_uren: "52",
