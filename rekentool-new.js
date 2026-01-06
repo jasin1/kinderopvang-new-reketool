@@ -649,16 +649,16 @@ $(".reken_btn").mousedown("click", function () {
 
         $("#send-opvang").val("KDV hele dagopvang (12 uur p/d)");
 
-        $(".overzicht_kosten_totaal").html("&euro; 2242.50");
-        $("#send-totaal").val("&euro; 2242.50");
+        $(".overzicht_kosten_totaal").html("&euro; 2633.50");
+        $("#send-totaal").val("&euro; 2633.50");
 
         $(".overzicht_uren_totaal").html("260");
         $("#send-uren").val("260");
 
         $("#send-dagen").val("maandag,dinsdag,woensdag,donderdag,vrijdag");
 
-        $(".extra_txt").html("U krijgt een halve dag gratis van ons bij dit gekozen opvang pakket. Normaliter 260 uur maar u ontvangt 30 uur korting dat betekend wat u moet doorgeven aan de belastingdienst is; 230 X &euro;9,75 = &euro;2.242,50 per maand voor 5 hele dagen!");
-        $("#korting-txt").val("U krijgt een halve dag gratis van ons bij dit gekozen opvang pakket. Normaliter 260 uur maar u ontvangt 30 uur korting dat betekend wat u moet doorgeven aan de belastingdienst is; 230 X &euro;9,75 = &euro;2.242,50 per maand voor 5 hele dagen!");
+        $(".extra_txt").html("U krijgt een halve dag gratis van ons bij dit gekozen opvang pakket. Normaliter 260 uur maar u ontvangt 30 uur korting dat betekend wat u moet doorgeven aan de belastingdienst is; 230 X &euro;9,75 = &euro;2.633,50 per maand voor 5 hele dagen!");
+        $("#korting-txt").val("U krijgt een halve dag gratis van ons bij dit gekozen opvang pakket. Normaliter 260 uur maar u ontvangt 30 uur korting dat betekend wat u moet doorgeven aan de belastingdienst is; 230 X &euro;9,75 = &euro;2.633,50 per maand voor 5 hele dagen!");
 
     } else{
         $(".extra_txt").html(" ");
