@@ -545,7 +545,7 @@ function toonResultaat(resultaat) {
     }
     
     if (DOM.sendUren) {
-        DOM.sendUren.value = resultaat.nettoUren.toFixed(2).replace(".", ",");
+        DOM.sendUren.value = resultaat.totaalUren.toFixed(2).replace(".", ",");
     }
     
     if (DOM.sendKorting) {
