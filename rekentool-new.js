@@ -114,3 +114,193 @@ const CONFIG ={
     // Dagen mapping (voor weergave en formulier)
     dagen: ["maandag", "dinsdag", "woensdag", "donderdag", "vrijdag"]
 }
+
+
+// ============================================
+// CALCULATOR
+// Pure functies voor alle berekeningen.
+// Deze functies weten NIKS van de DOM.
+// Input: getallen en objecten
+// Output: getallen en objecten
+// ============================================
+
+/**
+ * Haalt tariefdata op uit CONFIG
+ * @param {string} opvangType - bv "dag", "voorschoolse"
+ * @param {number} tariefId - 1, 2, of 3
+ * @returns {object|null} - het tarief object of null als niet gevonden
+ */
+function haalTariefOp(opvangType, tariefId) {
+    const opvang = CONFIG.opvangTypen[opvangType];
+    if (!opvang) return null;
+    
+    return opvang.tarieven.find(t => t.id === tariefId) || null;
+}
+
+/**
+ * Berekent totaal aantal uren per maand
+ * @param {object} tariefData - het tarief object met urenPerDag array
+ * @param {number[]} geselecteerdeDagen - indices van gekozen dagen [0=ma, 1=di, ...]
+ * @returns {number} - totaal uren
+ */
+function berekenUren(tariefData, geselecteerdeDagen) {
+    let totaal = 0;
+    
+    for (const dagIndex of geselecteerdeDagen) {
+        totaal += tariefData.urenPerDag[dagIndex];
+    }
+    
+    return totaal;
+}
+
+/**
+ * Berekent kosten (simpele vermenigvuldiging)
+ * @param {number} uren 
+ * @param {number} tarief 
+ * @returns {number}
+ */
+function berekenKosten(uren, tarief) {
+    return uren * tarief;
+}
+
+/**
+ * Zoekt of er een korting van toepassing is
+ * @param {string} opvangType 
+ * @param {number} tariefId 
+ * @param {number} totaalUren 
+ * @returns {object|null} - de korting of null
+ */
+function zoekKorting(opvangType, tariefId, totaalUren) {
+    return CONFIG.kortingen.find(k => 
+        k.opvangType === opvangType && 
+        k.tariefId === tariefId && 
+        k.triggerUren === totaalUren
+    ) || null;
+}
+
+/**
+ * Genereert kortingstekst door placeholders te vervangen
+ * @param {object} korting - de korting uit CONFIG
+ * @param {object} waardes - de waardes om in te vullen
+ * @returns {string}
+ */
+function genereerKortingsTekst(korting, waardes) {
+    return korting.uitlegTekst
+        .replace("{totaalUren}", waardes.totaalUren)
+        .replace("{kortingUren}", waardes.kortingUren)
+        .replace("{nettoUren}", waardes.nettoUren)
+        .replace("{tarief}", waardes.tarief.toFixed(2).replace(".", ","))
+        .replace("{nettoKosten}", waardes.nettoKosten.toFixed(2).replace(".", ","));
+}
+
+/**
+ * Hoofdfunctie: berekent het volledige resultaat
+ * @param {string} opvangType - bv "dag"
+ * @param {number} tariefId - bv 2
+ * @param {number[]} geselecteerdeDagen - bv [0,1,2,3,4] voor alle dagen
+ * @returns {object} - compleet resultaat voor de UI
+ */
+function berekenResultaat(opvangType, tariefId, geselecteerdeDagen) {
+    // Haal tariefdata op
+    const tariefData = haalTariefOp(opvangType, tariefId);
+    if (!tariefData) {
+        return { error: "Tarief niet gevonden" };
+    }
+    
+    // Bereken uren
+    const totaalUren = berekenUren(tariefData, geselecteerdeDagen);
+    
+    // Check korting
+    const korting = zoekKorting(opvangType, tariefId, totaalUren);
+    
+    // Bereken kosten (met of zonder korting)
+    let nettoUren = totaalUren;
+    let kortingsTekst = "";
+    
+    if (korting) {
+        nettoUren = totaalUren - korting.kortingUren;
+        kortingsTekst = genereerKortingsTekst(korting, {
+            totaalUren: totaalUren,
+            kortingUren: korting.kortingUren,
+            nettoUren: nettoUren,
+            tarief: tariefData.tarief,
+            nettoKosten: berekenKosten(nettoUren, tariefData.tarief)
+        });
+    }
+    
+    const totaalKosten = berekenKosten(nettoUren, tariefData.tarief);
+    
+    // Zet gekozen dagen om naar namen voor weergave
+    const dagenNamen = geselecteerdeDagen.map(i => CONFIG.dagen[i]);
+    
+    // Return alles wat de UI nodig heeft
+    return {
+        opvangType: opvangType,
+        beschrijving: tariefData.beschrijving,
+        tarief: tariefData.tarief,
+        dagen: dagenNamen,
+        totaalUren: totaalUren,
+        nettoUren: nettoUren,
+        totaalKosten: totaalKosten,
+        heeftKorting: korting !== null,
+        kortingsTekst: kortingsTekst
+    };
+}
+
+
+// ============================================
+// STATE
+// Houdt bij wat de gebruiker heeft geselecteerd.
+// Dit is de enige plek waar selecties worden opgeslagen.
+// ============================================
+
+const STATE = {
+    opvangType: null,        // "dag", "voorschoolse", "naschoolse", "buitenschoolse"
+    tariefId: null,          // 1, 2, of 3
+    geselecteerdeDagen: []   // indices: 0=maandag, 1=dinsdag, etc.
+};
+
+/**
+ * Reset state naar beginwaarden
+ */
+function resetState() {
+    STATE.opvangType = null;
+    STATE.tariefId = null;
+    STATE.geselecteerdeDagen = [];
+}
+
+/**
+ * Reset alleen de dagen (bij wisselen van tarief)
+ */
+function resetDagen() {
+    STATE.geselecteerdeDagen = [];
+}
+
+/**
+ * Voeg een dag toe of verwijder hem (toggle)
+ * @param {number} dagIndex - 0=maandag, 1=dinsdag, etc.
+ */
+function toggleDag(dagIndex) {
+    const index = STATE.geselecteerdeDagen.indexOf(dagIndex);
+    
+    if (index === -1) {
+        // Dag zit er nog niet in, toevoegen
+        STATE.geselecteerdeDagen.push(dagIndex);
+    } else {
+        // Dag zit er al in, verwijderen
+        STATE.geselecteerdeDagen.splice(index, 1);
+    }
+}
+
+/**
+ * Check of we genoeg info hebben om te berekenen
+ * @returns {boolean}
+ */
+function staatKlaarVoorBerekening() {
+    return (
+        STATE.opvangType !== null &&
+        STATE.tariefId !== null &&
+        STATE.geselecteerdeDagen.length > 0
+    );
+}
+
