@@ -304,3 +304,410 @@ function staatKlaarVoorBerekening() {
     );
 }
 
+// ============================================
+// UI CONTROLLER
+// Alles wat met de DOM communiceert.
+// Event handlers, tonen/verbergen, waardes invullen.
+// ============================================
+
+// DOM element references - worden gevuld bij init
+const DOM = {
+    // Secties
+    tarievenSectie: null,
+    dagenSectie: null,
+    overzichtSectie: null,
+    
+    // Knoppen
+    berekenKnop: null,
+    berekenDimKnop: null,
+    terugKnop: null,
+    
+    // Opvang selectie
+    opvangSelectie: null,
+    
+    // Tarief selectie
+    tariefSelectie: null,
+    tariefRadios: null,
+    derdeOptie: null,
+    
+    // Dag checkboxes
+    dagCheckboxes: null,
+    
+    // Output velden (zichtbaar)
+    outputTarief: null,
+    outputDagen: null,
+    outputUren: null,
+    outputKosten: null,
+    outputOpvang: null,
+    outputExtra: null,
+    
+    // Hidden form fields (voor verzending)
+    sendTarief: null,
+    sendTotaal: null,
+    sendDagen: null,
+    sendOpvang: null,
+    sendUren: null,
+    sendKorting: null
+};
+
+/**
+ * Vult alle DOM references in
+ * Wordt eenmalig aangeroepen bij init
+ */
+function cacheDOMElementen() {
+    // Secties
+    DOM.tarievenSectie = document.querySelector(".tarieven");
+    DOM.dagenSectie = document.querySelector(".dagen");
+    DOM.overzichtSectie = document.querySelector(".rk-overzicht-wrapper");
+    
+    // Knoppen
+    DOM.berekenKnop = document.querySelector(".reken_btn");
+    DOM.berekenDimKnop = document.querySelector(".reken_dim_btn");
+    DOM.terugKnop = document.querySelector(".back_btn");
+    
+    // Opvang selectie
+    DOM.opvangSelectie = document.querySelector(".opvang-select");
+    
+    // Tarief selectie
+    DOM.tariefSelectie = document.querySelector(".tarief-select");
+    DOM.tariefRadios = document.querySelectorAll(".radio_tarief");
+    DOM.derdeOptie = document.getElementById("derde");
+    
+    // Dag checkboxes
+    DOM.dagCheckboxes = document.querySelectorAll(".checks");
+    
+    // Output velden (zichtbaar)
+    DOM.outputTarief = document.querySelector(".overzicht_tarief");
+    DOM.outputDagen = document.querySelector(".overzicht_dagen");
+    DOM.outputUren = document.querySelector(".overzicht_uren_totaal");
+    DOM.outputKosten = document.querySelector(".overzicht_kosten_totaal");
+    DOM.outputOpvang = document.querySelector(".overzicht_opvang_txt");
+    DOM.outputExtra = document.querySelector(".extra_txt");
+    
+    // Hidden form fields
+    DOM.sendTarief = document.getElementById("send-tarief");
+    DOM.sendTotaal = document.getElementById("send-totaal");
+    DOM.sendDagen = document.getElementById("send-dagen");
+    DOM.sendOpvang = document.getElementById("send-opvang");
+    DOM.sendUren = document.getElementById("send-uren");
+    DOM.sendKorting = document.getElementById("korting-txt");
+}
+
+/**
+ * Verberg een element
+ */
+function verberg(element) {
+    if (element) element.style.display = "none";
+}
+
+/**
+ * Toon een element
+ */
+function toon(element, displayType = "block") {
+    if (element) element.style.display = displayType;
+}
+
+/**
+ * Fade-in effect (optioneel, voor vloeiendere UI)
+ */
+function fadeIn(element, displayType = "block") {
+    if (!element) return;
+    element.style.opacity = "0";
+    element.style.display = displayType;
+    
+    // Kleine timeout zodat display: block eerst wordt toegepast
+    setTimeout(() => {
+        element.style.transition = "opacity 0.25s ease";
+        element.style.opacity = "1";
+    }, 10);
+}
+
+/**
+ * Zet UI in beginstaat
+ */
+function initUI() {
+    verberg(DOM.tarievenSectie);
+    verberg(DOM.dagenSectie);
+    verberg(DOM.overzichtSectie);
+    verberg(DOM.berekenKnop);
+    verberg(DOM.terugKnop);
+    toon(DOM.opvangSelectie);
+    
+    if (DOM.berekenDimKnop) toon(DOM.berekenDimKnop);
+}
+
+/**
+ * Vult de tariefopties voor het gekozen opvangtype
+ * @param {string} opvangType 
+ */
+function vulTariefOpties(opvangType) {
+    const opvang = CONFIG.opvangTypen[opvangType];
+    if (!opvang) return;
+    
+    const tarieven = opvang.tarieven;
+    
+    // Radio 1
+    const radio1 = document.getElementById("radio_1");
+    const label1Tarief = document.querySelector(".uur-tarief-1-html");
+    const label1Desc = document.querySelector(".uur-descrp-1");
+    if (radio1 && tarieven[0]) {
+        radio1.value = tarieven[0].tarief;
+        if (label1Tarief) label1Tarief.textContent = tarieven[0].tarief.toFixed(2).replace(".", ",");
+        if (label1Desc) label1Desc.textContent = tarieven[0].beschrijving;
+    }
+    
+    // Radio 2
+    const radio2 = document.getElementById("radio_2");
+    const label2Tarief = document.querySelector(".uur-tarief-2-html");
+    const label2Desc = document.querySelector(".uur-descrp-2");
+    if (radio2 && tarieven[1]) {
+        radio2.value = tarieven[1].tarief;
+        if (label2Tarief) label2Tarief.textContent = tarieven[1].tarief.toFixed(2).replace(".", ",");
+        if (label2Desc) label2Desc.textContent = tarieven[1].beschrijving;
+    }
+    
+    // Radio 3 (alleen bij BSO)
+    const radio3 = document.getElementById("radio_3");
+    const label3Tarief = document.querySelector(".uur-tarief-3-html");
+    const label3Desc = document.querySelector(".uur-descrp-3");
+    
+    if (tarieven[2]) {
+        // BSO heeft 3 tarieven
+        toon(DOM.derdeOptie);
+        if (radio3) {
+            radio3.value = tarieven[2].tarief;
+            if (label3Tarief) label3Tarief.textContent = tarieven[2].tarief.toFixed(2).replace(".", ",");
+            if (label3Desc) label3Desc.textContent = tarieven[2].beschrijving;
+        }
+    } else {
+        // Andere opvangtypen hebben 2 tarieven
+        verberg(DOM.derdeOptie);
+    }
+}
+
+/**
+ * Formatteert een getal als Nederlandse prijs
+ * @param {number} bedrag 
+ * @returns {string} bv "2.633,50"
+ */
+function formateerPrijs(bedrag) {
+    return bedrag.toFixed(2)
+        .replace(".", ",")
+        .replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
+/**
+ * Toont het resultaat op de pagina en vult hidden fields
+ * @param {object} resultaat - output van berekenResultaat()
+ */
+function toonResultaat(resultaat) {
+    // Zichtbare output
+    if (DOM.outputTarief) {
+        DOM.outputTarief.innerHTML = "&euro; " + resultaat.tarief.toFixed(2).replace(".", ",");
+    }
+    
+    if (DOM.outputDagen) {
+        DOM.outputDagen.textContent = resultaat.dagen.join(", ");
+    }
+    
+    if (DOM.outputUren) {
+        DOM.outputUren.textContent = resultaat.totaalUren.toFixed(2).replace(".", ",");
+    }
+    
+    if (DOM.outputKosten) {
+        DOM.outputKosten.innerHTML = "&euro; " + formateerPrijs(resultaat.totaalKosten);
+    }
+    
+    if (DOM.outputOpvang) {
+        DOM.outputOpvang.textContent = resultaat.beschrijving;
+    }
+    
+    // Extra tekst (korting uitleg of leeg)
+    if (DOM.outputExtra) {
+        DOM.outputExtra.innerHTML = resultaat.kortingsTekst || "";
+    }
+    
+    // Hidden form fields voor verzending
+    if (DOM.sendTarief) {
+        DOM.sendTarief.value = "&euro; " + resultaat.tarief.toFixed(2).replace(".", ",");
+    }
+    
+    if (DOM.sendTotaal) {
+        DOM.sendTotaal.value = "&euro; " + formateerPrijs(resultaat.totaalKosten);
+    }
+    
+    if (DOM.sendDagen) {
+        DOM.sendDagen.value = resultaat.dagen.join(", ");
+    }
+    
+    if (DOM.sendOpvang) {
+        DOM.sendOpvang.value = resultaat.beschrijving;
+    }
+    
+    if (DOM.sendUren) {
+        DOM.sendUren.value = resultaat.nettoUren.toFixed(2).replace(".", ",");
+    }
+    
+    if (DOM.sendKorting) {
+        DOM.sendKorting.value = resultaat.kortingsTekst || "";
+    }
+    
+    // Secties tonen/verbergen
+    verberg(DOM.tarievenSectie);
+    verberg(DOM.dagenSectie);
+    verberg(DOM.opvangSelectie);
+    verberg(DOM.berekenKnop);
+    toon(DOM.terugKnop);
+    fadeIn(DOM.overzichtSectie);
+}
+
+/**
+ * Reset alle checkboxes
+ */
+function resetCheckboxes() {
+    DOM.dagCheckboxes.forEach(checkbox => {
+        checkbox.checked = false;
+    });
+}
+
+/**
+ * Reset alle radio buttons
+ */
+function resetRadios() {
+    DOM.tariefRadios.forEach(radio => {
+        radio.checked = false;
+    });
+    
+    // Ook opvang radios resetten
+    const opvangRadios = document.querySelectorAll(".check_opvang");
+    opvangRadios.forEach(radio => {
+        radio.checked = false;
+    });
+}
+
+/**
+ * Volledige reset - terug naar begin
+ */
+function resetAlles() {
+    resetState();
+    resetCheckboxes();
+    resetRadios();
+    initUI();
+}
+
+/**
+ * Koppelt alle event listeners
+ */
+function koppelEventListeners() {
+    
+    // === Opvang selectie ===
+    DOM.opvangSelectie.addEventListener("change", function(e) {
+        if (e.target.type !== "radio") return;
+        
+        // Update state
+        STATE.opvangType = e.target.value;
+        STATE.tariefId = null;
+        resetDagen();
+        
+        // Update UI
+        resetCheckboxes();
+        resetRadios();
+        vulTariefOpties(STATE.opvangType);
+        
+        verberg(DOM.tariefSelectie);
+        verberg(DOM.dagenSectie);
+        fadeIn(DOM.tarievenSectie);
+        
+        setTimeout(() => {
+            fadeIn(DOM.tariefSelectie);
+        }, 120);
+    });
+    
+    // === Tarief selectie ===
+    DOM.tariefSelectie.addEventListener("change", function(e) {
+        if (e.target.type !== "radio") return;
+        
+        // Bepaal welke tarief is geselecteerd (1, 2, of 3)
+        if (e.target.id === "radio_1") STATE.tariefId = 1;
+        else if (e.target.id === "radio_2") STATE.tariefId = 2;
+        else if (e.target.id === "radio_3") STATE.tariefId = 3;
+        
+        // Reset dagen bij tarief wissel
+        resetDagen();
+        resetCheckboxes();
+        
+        // Update opvang beschrijving alvast
+        const tariefData = haalTariefOp(STATE.opvangType, STATE.tariefId);
+        if (tariefData && DOM.outputOpvang) {
+            DOM.outputOpvang.textContent = tariefData.beschrijving;
+        }
+        
+        // Toon dagen selectie
+        fadeIn(DOM.dagenSectie);
+    });
+    
+    // === Dag checkboxes ===
+    DOM.dagCheckboxes.forEach((checkbox, index) => {
+        checkbox.addEventListener("change", function() {
+            // Toggle dag in state
+            toggleDag(index);
+            
+            // Toon/verberg bereken knop
+            if (STATE.geselecteerdeDagen.length > 0) {
+                verberg(DOM.berekenDimKnop);
+                fadeIn(DOM.berekenKnop);
+            } else {
+                verberg(DOM.berekenKnop);
+                toon(DOM.berekenDimKnop);
+            }
+        });
+    });
+    
+    // === Bereken knop ===
+    DOM.berekenKnop.addEventListener("click", function() {
+        if (!staatKlaarVoorBerekening()) return;
+        
+        // Bereken resultaat
+        const resultaat = berekenResultaat(
+            STATE.opvangType,
+            STATE.tariefId,
+            STATE.geselecteerdeDagen
+        );
+        
+        // Toon resultaat
+        toonResultaat(resultaat);
+    });
+    
+    // === Terug knop ===
+    DOM.terugKnop.addEventListener("click", function() {
+        resetAlles();
+    });
+}
+
+// ============================================
+// INIT
+// Startpunt van de applicatie.
+// Wordt aangeroepen wanneer de pagina geladen is.
+// ============================================
+
+/**
+ * Initialiseert de rekentool
+ */
+function init() {
+    // 1. Cache alle DOM elementen
+    cacheDOMElementen();
+    
+    // 2. Reset state naar beginwaarden
+    resetState();
+    
+    // 3. Zet UI in beginstaat
+    initUI();
+    
+    // 4. Koppel alle event listeners
+    koppelEventListeners();
+    
+    console.log("Rekentool geïnitialiseerd");
+}
+
+// Start wanneer DOM geladen is
+document.addEventListener("DOMContentLoaded", init);
