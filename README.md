@@ -207,7 +207,7 @@ De 5-dagen korting werkt alleen bij:
 
 ## Contact
 
-Voor technische vragen of aanpassingen: [jouw contactgegevens of verwijzen naar wie het overneemt]
+Voor technische vragen of aanpassingen neem contact op met de huidige developer
 
 ---
 
